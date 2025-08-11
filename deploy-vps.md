@@ -11,7 +11,7 @@ git add .
 git commit -m "Initial commit - WhatsApp Expense Tracker"
 
 # Criar repositório no GitHub e depois:
-git remote add origin https://github.com/SEU_USUARIO/whatsapp-expense-tracker.git
+git remote add origin https://github.com/JonathanCutrim/whatsapp-expense-tracker.git
 git push -u origin main
 ```
 
@@ -21,13 +21,13 @@ git push -u origin main
 ssh root@31.97.90.110
 
 # Baixar e executar o script de setup:
-curl -fsSL https://raw.githubusercontent.com/SEU_USUARIO/whatsapp-expense-tracker/main/setup-vps.sh | bash
+curl -fsSL https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh?token=GHSAT0AAAAAADJBA33W4WDZFNDQZT26B2HA2E2FDVA | bash
 ```
 
 **OU baixar e executar manualmente:**
 ```bash
 ssh root@31.97.90.110
-wget https://raw.githubusercontent.com/SEU_USUARIO/whatsapp-expense-tracker/main/setup-vps.sh
+wget https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh?token=GHSAT0AAAAAADJBA33W4WDZFNDQZT26B2HA2E2FDVA
 chmod +x setup-vps.sh
 ./setup-vps.sh
 ```

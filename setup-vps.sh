@@ -37,7 +37,7 @@ rm -rf /opt/whatsapp-gastos
 # Clona o projeto do GitHub
 echo "📥 Clonando projeto do GitHub..."
 cd /opt
-git clone https://github.com/SEU_USUARIO/whatsapp-expense-tracker.git whatsapp-gastos
+git clone https://github.com/JonathanCutrim/whatsapp-expense-tracker.git whatsapp-gastos
 cd /opt/whatsapp-gastos
 
 # Torna scripts executáveis
