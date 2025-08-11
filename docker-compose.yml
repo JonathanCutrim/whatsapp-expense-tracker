@@ -39,7 +39,7 @@ services:
       - expense_tracker
 
   waha:
-    image: devlikeapro/waha:2024.12.12
+    image: devlikeapro/waha:latest
     container_name: waha
     restart: unless-stopped
     ports:

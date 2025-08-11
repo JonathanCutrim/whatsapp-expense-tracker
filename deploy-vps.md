@@ -21,13 +21,13 @@ git push -u origin main
 ssh root@31.97.90.110
 
 # Baixar e executar o script de setup:
-curl -fsSL https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh?token=GHSAT0AAAAAADJBA33W4WDZFNDQZT26B2HA2E2FDVA | bash
+curl -fsSL https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh | bash
 ```
 
 **OU baixar e executar manualmente:**
 ```bash
 ssh root@31.97.90.110
-wget https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh?token=GHSAT0AAAAAADJBA33W4WDZFNDQZT26B2HA2E2FDVA
+wget https://raw.githubusercontent.com/JonathanCutrim/whatsapp-expense-tracker/refs/heads/main/setup-vps.sh
 chmod +x setup-vps.sh
 ./setup-vps.sh
 ```
