@@ -1,0 +1,270 @@
+{
+  "name": "WhatsApp to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-gasto",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d5234567-e89b-12d3-a456-426614174000",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c5234567-e89b-12d3-a456-426614174001",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "message",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f5234567-e89b-12d3-a456-426614174002",
+      "name": "Filter Messages",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/generate",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "llama3.2"
+            },
+            {
+              "name": "prompt",
+              "value": "Analise esta mensagem do WhatsApp e extraia informações estruturadas em JSON. Se a mensagem contém informações sobre gastos, vendas, ou transações financeiras, extraia: valor (número), descrição (texto), categoria (texto), data (formato ISO YYYY-MM-DD). Se não for uma transação financeira, retorne apenas: tipo: 'mensagem_comum', conteudo: 'texto da mensagem'. Responda APENAS com JSON válido, sem explicações. Mensagem: {{ $json.payload.body }}"
+            },
+            {
+              "name": "stream",
+              "value": false
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a5234567-e89b-12d3-a456-426614174003",
+      "name": "Ollama AI Parse",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ollamaResponse = $input.first().json;\nconst messageText = ollamaResponse.response;\n\ntry {\n  // Try to parse the response directly as JSON\n  let parsedData;\n  try {\n    parsedData = JSON.parse(messageText);\n  } catch {\n    // If not JSON, clean markdown and try again\n    const cleanText = messageText.replace(/```json\\n?|```\\n?/g, '').trim();\n    parsedData = JSON.parse(cleanText);\n  }\n  \n  // Add metadata\n  parsedData.timestamp = new Date().toISOString();\n  parsedData.phone_number = $('WhatsApp Webhook').first().json.payload.from;\n  parsedData.original_message = $('WhatsApp Webhook').first().json.payload.body;\n  \n  return { json: parsedData };\n} catch (error) {\n  // Fallback for unparseable responses\n  return {\n    json: {\n      tipo: 'erro_parse',\n      conteudo: messageText,\n      timestamp: new Date().toISOString(),\n      phone_number: $('WhatsApp Webhook').first().json.payload.from,\n      original_message: $('WhatsApp Webhook').first().json.payload.body,\n      erro: error.message\n    }\n  };\n}"
+      },
+      "id": "b5234567-e89b-12d3-a456-426614174004",
+      "name": "Parse JSON Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "phone_number": "={{ $json.phone_number }}",
+            "original_message": "={{ $json.original_message }}",
+            "tipo": "={{ $json.tipo || 'transacao' }}",
+            "valor": "={{ $json.valor || '' }}",
+            "descricao": "={{ $json.descricao || $json.conteudo || '' }}",
+            "categoria": "={{ $json.categoria || '' }}"
+          },
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "original_message",
+              "displayName": "original_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "descricao",
+              "displayName": "descricao",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c5234567-e89b-12d3-a456-426614174005",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"success\", \"message\": \"Mensagem processada com sucesso\" } }}"
+      },
+      "id": "e5234567-e89b-12d3-a456-426614174006",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Messages": {
+      "main": [
+        [
+          {
+            "node": "Ollama AI Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama AI Parse": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON Response": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "12345678-1234-1234-1234-123456789012",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "12345678901234567890123456789012"
+  },
+  "id": "whatsapp-to-sheets",
+  "tags": []
+}

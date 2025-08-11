@@ -1,0 +1,31 @@
+🎯 Objetivo
+Receber mensagens no WhatsApp contendo informações de gastos, interpretar o conteúdo usando IA local via Ollama, extrair dados estruturados (categoria, descrição, valor e data) e salvar diretamente em uma planilha do Google Sheets para consulta e análise.
+
+Tecnologias Utilizadas
+
+n8n	Orquestra o fluxo de automação
+Docker	Containerização dos serviços
+Google Sheets	Armazenamento dos dados
+Ollama	Execução local de modelos LLM para interpretação das mensagens
+WAHA (ou Baileys)	Integração com WhatsApp para receber/enviar mensagens
+Vou colocar em uma VPS, mas se preferir fazer localmente de inicio tudo bem
+
+Mas a vps é essa:
+Acesso root:
+ssh root@31.97.90.110
+
+senha: h&-(cUx8J-1r)1j@1mE?
+
+
+
+⚙️ Arquitetura do Sistema
+mermaid
+Copiar
+Editar
+graph TD
+A[Usuário envia mensagem no WhatsApp] --> B[WAHA API]
+B --> C[n8n Webhook /whatsapp-gasto]
+C --> D[Ollama - IA local]
+D --> E[Resposta JSON estruturada]
+E --> F[Google Sheets - Planilha de Gastos]
+F --> G[Confirmação enviada ao usuário via WAHA]
