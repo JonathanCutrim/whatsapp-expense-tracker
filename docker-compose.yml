@@ -5,24 +5,34 @@ services:
     image: n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
+    # expõe só na máquina (Nginx faz o proxy)
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
+
+      # auth básica do editor (opcional)
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
       - N8N_BASIC_AUTH_PASSWORD=senhaSegura
-      - N8N_HOST=0.0.0.0
+
+      # >>> n8n por trás de proxy (ESSENCIAIS)
+      - N8N_HOST=cda.jonathanlacerda.dev
       - N8N_PORT=5678
-      - WEBHOOK_URL=https://cda.jonathanlacerda.dev/
-      - N8N_PROTOCOL=http
-      - N8N_SECURE_COOKIE=false
+      - N8N_PROTOCOL=http                 # TLS termina no Nginx
+      - WEBHOOK_URL=https://cda.jonathanlacerda.dev
+      - N8N_EDITOR_BASE_URL=https://cda.jonathanlacerda.dev
+      - N8N_SECURE_COOKIE=true
+
+      # >>> importante p/ persistir credenciais criptografadas
+      # troque por uma string grande/aleatória e NÃO compartilhe
+      - N8N_ENCRYPTION_KEY=troque_esta_chave_supersecreta
+
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/workflows:/home/node/.n8n/workflows
     depends_on:
       - ollama
-      - waha
     networks:
       - expense_tracker
 
@@ -50,6 +60,8 @@ services:
       - WHATSAPP_HOOK_EVENTS=message
     volumes:
       - waha_data:/app/.wwebjs_auth
+    depends_on:
+      - n8n
     networks:
       - expense_tracker
 
