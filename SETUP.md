@@ -49,7 +49,7 @@ docker exec ollama ollama pull llama3.2
 ```
 
 ### 3. **Acessar n8n**
-- URL: http://localhost:5678 (ou http://31.97.90.110:5678 na VPS)
+- URL: https://cda.jonathanlacerda.dev
 - Usuário: `admin`
 - Senha: `senhaSegura`
 
@@ -61,7 +61,7 @@ docker exec ollama ollama pull llama3.2
 - Substitua `YOUR_GOOGLE_SHEET_ID` pelo ID da sua planilha
 
 ### 6. **Configurar WAHA (WhatsApp)**
-- Acesse http://localhost:3000 (ou http://31.97.90.110:3000 na VPS)
+- Acesse https://wp.jonathanlacerda.dev
 - Escaneie o QR Code do WhatsApp
 - O webhook já está configurado para: `http://n8n:5678/webhook/whatsapp-gasto`
 
