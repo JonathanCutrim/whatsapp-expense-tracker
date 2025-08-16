@@ -22,7 +22,6 @@ services:
       - N8N_EDITOR_BASE_URL=https://cda.jonathanlacerda.dev
       - N8N_SECURE_COOKIE=true
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - N8N_ENCRYPTION_KEY=2381eabc-c7ef-48fb-988b-55d3601fbdc4
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/workflows:/home/node/.n8n/workflows
